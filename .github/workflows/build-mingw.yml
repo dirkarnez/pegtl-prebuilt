@@ -22,9 +22,28 @@ jobs:
         shell: cmd
         run: git clone https://github.com/taocpp/PEGTL.git && cd PEGTL && git checkout ${{ env.tagName }}
 
+      - name: Install boost
+        uses: MarkusJx/install-boost@v2.3.0
+        id: install-boost
+        with:
+          # REQUIRED: Specify the required boost version
+          # A list of supported versions can be found here: 
+          # https://github.com/MarkusJx/prebuilt-boost/blob/main/versions-manifest.json
+          boost_version: 1.78.0
+          # OPTIONAL: Specify a custon install location
+          boost_install_dir: ${{github.workspace}}
+          # OPTIONAL: Specify a platform version
+          platform_version: 2019
+          # OPTIONAL: Specify a toolset
+          toolset: mingw
+          link: static
+          arch: x86
+          # NOTE: If a boost version matching all requirements cannot be found,
+          # this build step will fail
+          
       - name: cmake
         shell: cmd
-        run: cd PEGTL && cmake.exe -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DPEGTL_BUILD_TESTS=OFF -DBOOST_ROOT="D:/Code Projects/cpp-libraries/boost-1.78.0-windows-2019-mingw-static" -DPEGTL_BUILD_EXAMPLES=OFF -DCMAKE_INSTALL_PREFIX="build/${{ env.cmakeInstallationPath }}" -B./build
+        run: cd PEGTL && cmake.exe -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DPEGTL_BUILD_TESTS=OFF -DPEGTL_BUILD_EXAMPLES=OFF -DBOOST_ROOT="${{github.workspace}}/boost/boost/lib/cmake/Boost-1.78.0" -DCMAKE_INSTALL_PREFIX="build/${{ env.cmakeInstallationPath }}" -B./build
         
       - name: cmake build and install
         shell: cmd
